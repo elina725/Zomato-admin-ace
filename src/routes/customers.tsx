@@ -1,12 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { customers } from "@/lib/mock-data";
+
 import { Search, Phone, Mail, MapPin, Download } from "lucide-react";
+
+const API_URL = "http://localhost:8001/api";
 
 export const Route = createFileRoute("/customers")({
   head: () => ({ meta: [{ title: "Customers — Zamato Partner" }, { name: "description", content: "Details of customers who ordered from your restaurant." }] }),
@@ -15,7 +18,38 @@ export const Route = createFileRoute("/customers")({
 
 const initials = (n: string) => n.split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase();
 
+type Customer = {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  totalOrders: number;
+  totalSpent: number;
+  lastOrder: string;
+};
+
 function CustomersPage() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch(`${API_URL}/customers/vendor`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("vendorToken")}`,
+        },
+      });
+        const data = await response.json();
+        setCustomers(data);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
+
   const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0);
   const totalOrders = customers.reduce((s, c) => s + c.totalOrders, 0);
 

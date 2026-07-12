@@ -1,11 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect , useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { orders, statusLabel, type OrderStatus } from "@/lib/mock-data";
+type OrderStatus =
+  | "pending"
+  | "preparing"
+  | "on-the-way"
+  | "delivered"
+  | "cancelled";
+
+const statusLabel: Record<OrderStatus, string> = {
+  pending: "Pending",
+  preparing: "Preparing",
+  "on-the-way": "On the way",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
 import { Search, Filter, Phone, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/orders")({
@@ -13,18 +26,53 @@ export const Route = createFileRoute("/orders")({
   component: OrdersPage,
 });
 
+const API_URL = "http://localhost:8001/api";
+
 const tabs: { key: "all" | OrderStatus; label: string }[] = [
   { key: "all", label: "All" },
   { key: "pending", label: "Pending" },
   { key: "preparing", label: "Preparing" },
-  { key: "on_the_way", label: "On the way" },
+  { key: "on-the-way", label: "On the way" },
   { key: "delivered", label: "Delivered" },
   { key: "cancelled", label: "Cancelled" },
 ];
 
+interface Order {
+  id: string;
+  customer: string;
+  phone: string;
+  restaurantName: string;
+  vendorId: number;
+  items: {
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
+  total: number;
+  status: OrderStatus;
+  placedAt: string;
+  address: string;
+  paymentMode: string;
+}
+
 function OrdersPage() {
   const [tab, setTab] = useState<"all" | OrderStatus>("all");
   const [q, setQ] = useState("");
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+  const vendorToken = localStorage.getItem("vendorToken");
+
+  fetch(`${API_URL}/orders/vendor`, {
+    headers: {
+      Authorization: `Bearer ${vendorToken}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => setOrders(data))
+    .catch((err) => console.error(err));
+}, []);
+
   const filtered = orders.filter((o) =>
     (tab === "all" || o.status === tab) &&
     (q === "" || o.id.toLowerCase().includes(q.toLowerCase()) || o.customer.toLowerCase().includes(q.toLowerCase()))
@@ -73,8 +121,8 @@ function OrdersPage() {
               <ul className="mt-3 space-y-1 text-sm">
                 {o.items.map((it, i) => (
                   <li key={i} className="flex justify-between">
-                    <span>{it.qty}× {it.name}</span>
-                    <span className="text-muted-foreground">₹{it.qty * it.price}</span>
+                    <span>{it.quantity}× {it.name}</span>
+                    <span className="text-muted-foreground">₹{it.quantity * it.price}</span>
                   </li>
                 ))}
               </ul>
@@ -85,7 +133,7 @@ function OrdersPage() {
                   <Button size="sm" variant="outline">Reject</Button>
                 </>}
                 {o.status === "preparing" && <Button size="sm" className="bg-primary hover:bg-primary/90">Mark ready</Button>}
-                {o.status === "on_the_way" && <Button size="sm" variant="outline">Track rider</Button>}
+                {o.status === "on-the-way" && <Button size="sm" variant="outline">Track rider</Button>}
                 <Button size="sm" variant="ghost">View details</Button>
               </div>
             </CardContent>
@@ -100,7 +148,7 @@ function StatusPill({ status }: { status: OrderStatus }) {
   const map: Record<OrderStatus, string> = {
     pending: "bg-warning/15 text-warning-foreground border-warning/30",
     preparing: "bg-chart-3/15 text-chart-3 border-chart-3/30",
-    on_the_way: "bg-accent text-accent-foreground border-primary/30",
+    "on-the-way": "bg-accent text-accent-foreground border-primary/30",
     delivered: "bg-success/15 text-success border-success/30",
     cancelled: "bg-destructive/10 text-destructive border-destructive/30",
   };
