@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect , useState } from "react";
+import { API_URL } from "../lib/apiConfig";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,6 @@ export const Route = createFileRoute("/orders")({
   head: () => ({ meta: [{ title: "Orders — Zamato Partner" }, { name: "description", content: "Live orders and full order history for your restaurant." }] }),
   component: OrdersPage,
 });
-
-const API_URL = "http://localhost:8001/api";
 
 const tabs: { key: "all" | OrderStatus; label: string }[] = [
   { key: "all", label: "All" },

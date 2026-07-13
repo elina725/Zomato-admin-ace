@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { API_URL } from "../lib/apiConfig";
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,8 +17,6 @@ export const Route = createFileRoute("/products")({
   head: () => ({ meta: [{ title: "Menu & Products - Zamato Partner" }, { name: "description", content: "Manage your restaurant menu, prices and availability." }] }),
   component: ProductsPage,
 });
-
-const API_URL = "http://localhost:8001/api";
 
 type Category = { id: number; name: string };
 type Product = {

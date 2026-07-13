@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { API_URL } from "../lib/apiConfig";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +16,6 @@ export const Route = createFileRoute("/login")({
   }),
   component: LoginPage,
 });
-
-const API_URL = "http://localhost:8001/api";
 
 function LoginPage() {
   const navigate = useNavigate();

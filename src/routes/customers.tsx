@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/apiConfig";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 import { Search, Phone, Mail, MapPin, Download } from "lucide-react";
-
-const API_URL = "http://localhost:8001/api";
 
 export const Route = createFileRoute("/customers")({
   head: () => ({ meta: [{ title: "Customers — Zamato Partner" }, { name: "description", content: "Details of customers who ordered from your restaurant." }] }),

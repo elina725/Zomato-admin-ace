@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { API_URL } from "../lib/apiConfig";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +17,6 @@ export const Route = createFileRoute("/onboarding")({
   }),
   component: Onboarding,
 });
-
-const API_URL = "http://localhost:8001/api";
 
 const steps = [
   { icon: Store, title: "Restaurant details", desc: "Owner, login and cuisine" },
